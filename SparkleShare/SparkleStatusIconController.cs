@@ -46,11 +46,15 @@ namespace SparkleShare {
         public event UpdateQuitItemEventHandler UpdateQuitItemEvent = delegate { };
         public delegate void UpdateQuitItemEventHandler (bool quit_item_enabled);
 
+		public event UpdateFolderIconEventHandler UpdateFolderIconEvent = delegate { };
+        public delegate void UpdateFolderIconEventHandler (SyncStatus[] folderStates);
+
         public IconState CurrentState = IconState.Idle;
         public string StateText       = "Welcome to SparkleShare!";
 
-        public string [] Folders      = new string [0];
-        public string [] FolderErrors = new string [0];
+        public string [] Folders      	  = new string [0];
+        public string [] FolderErrors 	  = new string [0];
+		public SyncStatus [] FolderStates = new SyncStatus [0];
         
 
         public string FolderSize {
@@ -131,6 +135,7 @@ namespace SparkleShare {
 
                 UpdateStatusItemEvent (StateText);
                 UpdateMenuEvent (CurrentState);
+				UpdateFolderIconEvent (FolderStates);
             };
 
             Program.Controller.OnIdle += delegate {
@@ -148,12 +153,13 @@ namespace SparkleShare {
                 UpdateIconEvent (CurrentState);
                 UpdateStatusItemEvent (StateText);
                 UpdateMenuEvent (CurrentState);
+				UpdateFolderIconEvent (FolderStates);
             };
 
             Program.Controller.OnSyncing += delegate {
 				int repos_syncing_up   = 0;
 				int repos_syncing_down = 0;
-				
+
 				foreach (SparkleRepoBase repo in Program.Controller.Repositories) {
 					if (repo.Status == SyncStatus.SyncUp)
 						repos_syncing_up++;
@@ -180,9 +186,12 @@ namespace SparkleShare {
                 if (ProgressPercentage > 0)
                     StateText += " " + ProgressPercentage + "%  " + ProgressSpeed;
 
+                UpdateFolders ();
+
                 UpdateIconEvent (CurrentState);
                 UpdateStatusItemEvent (StateText);
                 UpdateQuitItemEvent (QuitItemEnabled);
+				UpdateFolderIconEvent (FolderStates);
             };
 
             Program.Controller.OnError += delegate {
@@ -194,6 +203,7 @@ namespace SparkleShare {
                 UpdateIconEvent (CurrentState);
                 UpdateStatusItemEvent (StateText);
                 UpdateMenuEvent (CurrentState);
+				UpdateFolderIconEvent (FolderStates);
             };
         }
 
@@ -267,9 +277,11 @@ namespace SparkleShare {
             lock (this.folders_lock) {
                 List<string> folders = new List<string> ();
                 List<string> folder_errors = new List<string> ();
+                List<SyncStatus> folder_states = new List<SyncStatus> ();
 
                 foreach (SparkleRepoBase repo in Program.Controller.Repositories) {
                     folders.Add (repo.Name);
+					folder_states.Add (repo.Status);
                     
                     if (repo.Error == ErrorStatus.HostUnreachable) {
                         folder_errors.Add ("Can't reach the host");
@@ -296,6 +308,7 @@ namespace SparkleShare {
 
                 Folders = folders.ToArray ();
                 FolderErrors = folder_errors.ToArray ();
+				FolderStates = folder_states.ToArray ();
             }
         }
     }

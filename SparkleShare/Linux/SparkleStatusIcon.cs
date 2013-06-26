@@ -16,6 +16,8 @@
 
 
 using System;
+using System.Collections.Generic;
+using SparkleLib;
 
 using Gtk;
 #if HAVE_APP_INDICATOR
@@ -32,6 +34,14 @@ namespace SparkleShare {
         private MenuItem recent_events_item;
         private MenuItem quit_item;
         private MenuItem state_item;
+
+		private static Image folderIcon = new Image (IconTheme.Default.LoadIcon ("folder", 16, IconLookupFlags.GenericFallback));
+		private static Image syncingUpIcon = new Image (IconTheme.Default.LoadIcon ("folder-syncing-up", 16, IconLookupFlags.GenericFallback));
+		private static Image syncingDownIcon = new Image (IconTheme.Default.LoadIcon ("folder-syncing-down", 16, IconLookupFlags.GenericFallback));
+		private static Image errorIcon = new Image (IconTheme.Default.LoadIcon ("folder-syncing-error", 16, IconLookupFlags.GenericFallback));
+		private static Image warningIcon = new Image (IconTheme.Default.LoadIcon ("dialog-warning", 16, IconLookupFlags.GenericFallback));
+
+		private List<ImageMenuItem> folderItems = new List<ImageMenuItem>();
 
         #if HAVE_APP_INDICATOR
         private ApplicationIndicator indicator;
@@ -109,6 +119,35 @@ namespace SparkleShare {
                 });
             };
 
+			Controller.UpdateFolderIconEvent += delegate (SyncStatus[] folderStates) {
+                Application.Invoke (delegate {
+					int i = 0;
+					foreach(ImageMenuItem item in this.folderItems) {
+						if (i >= folderStates.Length)
+							break;
+
+						switch(folderStates[i]) {
+						case SyncStatus.Idle:
+							item.Image = folderIcon;
+							break;
+						case SyncStatus.SyncUp:
+							item.Image = syncingUpIcon;
+							break;
+						case SyncStatus.SyncDown:
+							item.Image = syncingDownIcon;
+							break;
+						case SyncStatus.Error:
+							item.Image = errorIcon;
+							break;
+						}
+
+	                    item.ShowAll ();
+
+						i++;
+					}
+                });
+			};
+
             Controller.UpdateStatusItemEvent += delegate (string state_text) {
                 Application.Invoke (delegate {
                     (this.state_item.Child as Label).Text = state_text;
@@ -131,8 +170,9 @@ namespace SparkleShare {
 
         public void CreateMenu ()
         {
-            this.menu       = new Menu ();
-            this.state_item = new MenuItem (Controller.StateText) { Sensitive = false };
+            this.menu        = new Menu ();
+            this.state_item  = new MenuItem (Controller.StateText) { Sensitive = false };
+			this.folderItems = new List<ImageMenuItem>();
 
             ImageMenuItem folder_item = new SparkleMenuItem ("SparkleShare");
             folder_item.Image = new Image (SparkleUIHelpers.GetIcon ("sparkleshare", 16));
@@ -145,10 +185,9 @@ namespace SparkleShare {
                 int i = 0;
                 foreach (string folder_name in Controller.Folders) {
                     ImageMenuItem item = new SparkleMenuItem (folder_name);
-                    Gdk.Pixbuf folder_icon;
 
                     if (!string.IsNullOrEmpty (Controller.FolderErrors [i])) {
-                        folder_icon = IconTheme.Default.LoadIcon ("dialog-warning", 16, IconLookupFlags.GenericFallback);
+						item.Image = warningIcon;
                         item.Submenu = new Menu ();
                             
                         MenuItem error_item = new MenuItem (Controller.FolderErrors [i]) { Sensitive = false };
@@ -160,13 +199,13 @@ namespace SparkleShare {
                         (item.Submenu as Menu).Add (try_again_item);
 
                     } else {
-                        folder_icon = IconTheme.Default.LoadIcon ("folder", 16, IconLookupFlags.GenericFallback);
+						item.Image = folderIcon;
                         item.Activated += Controller.OpenFolderDelegate (folder_name);
                     }
 
                     (item.Child as Label).UseUnderline = false;
-                    item.Image = new Image (folder_icon);
                     this.menu.Add (item);
+					this.folderItems.Add(item);
                     
                     i++;
                 }
