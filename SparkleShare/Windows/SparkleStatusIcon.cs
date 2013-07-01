@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using SparkleLib;
 
 using Drawing = System.Drawing;
 using Forms = System.Windows.Forms;
@@ -38,6 +39,22 @@ namespace SparkleShare {
         private Drawing.Bitmap syncing_down_image  = SparkleUIHelpers.GetBitmap ("process-syncing-down");
         private Drawing.Bitmap syncing_image       = SparkleUIHelpers.GetBitmap ("process-syncing");
         private Drawing.Bitmap syncing_error_image = SparkleUIHelpers.GetBitmap ("process-syncing-error");
+
+		private Image subfolder_idle_image = new Image () {
+                        Source = SparkleUIHelpers.GetImageSource ("folder"),
+                        Width  = 16,
+                        Height = 16
+                    };
+		private Image subfolder_syncing_up_image = new Image () {
+                        Source = SparkleUIHelpers.GetImageSource ("folder-syncing-up"),
+                        Width  = 16,
+                        Height = 16
+                    };
+		private Image subfolder_syncing_down_image = new Image () {
+                        Source = SparkleUIHelpers.GetImageSource ("folder-syncing-down"),
+                        Width  = 16,
+                        Height = 16
+                    };
 
         private ContextMenu context_menu;
 
@@ -102,8 +119,37 @@ namespace SparkleShare {
                     this.exit_item.UpdateLayout ();
                 });
             };
-        }
 
+			Controller.UpdateFolderIconEvent += delegate (SyncStatus[] folderStates) {
+                Application.Invoke (delegate {
+					int i = 0;
+					foreach(ImageMenuItem item in this.folderItems) {
+						if (i >= folderStates.Length)
+							break;
+
+						switch(folderStates[i]) {
+						case SyncStatus.Idle:
+							item.Image = folderIcon;
+							break;
+						case SyncStatus.SyncUp:
+							item.Image = syncingUpIcon;
+							break;
+						case SyncStatus.SyncDown:
+							item.Image = syncingDownIcon;
+							break;
+						case SyncStatus.Error:
+							item.Image = errorIcon;
+							break;
+						}
+
+	                    item.ShowAll ();
+
+						i++;
+					}
+                });
+			};
+
+        }
 
         public void CreateMenu ()
         {
@@ -190,12 +236,6 @@ namespace SparkleShare {
                         Header = folder_name.Replace ("_", "__")
                     };
                     
-                    Image subfolder_image = new Image () {
-                        Source = SparkleUIHelpers.GetImageSource ("folder"),
-                        Width  = 16,
-                        Height = 16
-                    };
-                    
                     if (!string.IsNullOrEmpty (Controller.FolderErrors [i])) {
                         subfolder_item.Icon = new Image () {
                             Source = (BitmapSource) Imaging.CreateBitmapSourceFromHIcon (
@@ -219,7 +259,7 @@ namespace SparkleShare {
                         subfolder_item.Items.Add (try_again_item);
                         
                     } else {
-                        subfolder_item.Icon = subfolder_image;
+                        subfolder_item.Icon = subfolder_idle_image;
 						subfolder_item.Click += new RoutedEventHandler (Controller.OpenFolderDelegate (folder_name));
                     }
                     

@@ -238,6 +238,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Pixmaps\folder.png" />
+    <EmbeddedResource Include="Pixmaps\folder-syncing-up.png" />
+    <EmbeddedResource Include="Pixmaps\folder-syncing-down.png" />
     <EmbeddedResource Include="Pixmaps\process-syncing-error.png" />
     <EmbeddedResource Include="Pixmaps\sparkleshare-app.ico" />
     <EmbeddedResource Include="Pixmaps\sparkleshare-folder.png" />
