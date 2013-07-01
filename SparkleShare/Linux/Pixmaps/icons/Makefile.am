@@ -20,7 +20,13 @@ system_theme_icons = \
     status,process-syncing-up-48.png \
     status,process-syncing-down-48.png \
     status,process-syncing-48.png \
-    status,process-syncing-error-48.png
+    status,process-syncing-error-48.png \
+    status,folder-syncing-up-24.png \
+    status,folder-syncing-up-48.png \
+    status,folder-syncing-down-24.png \
+    status,folder-syncing-down-48.png \
+    status,folder-syncing-error-24.png \
+    status,folder-syncing-error-48.png
 
 app_theme_icons = \
 	animations,process-working-22.png \
