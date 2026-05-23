@@ -32,7 +32,7 @@
                 var entry_count = $(this).parent ().find ('dl').children ().length;
 
                 if (entry_count > 10)
-                  $(this).html ('Show all ' + entry_count + '…');
+                  $(this).html ('Show all ' + entry_count);
                 else
                   $(this).hide ();
               });
@@ -55,9 +55,10 @@
                 background-color: #fefefe;
                 color: <!-- $body-color -->;
                 font-size: <!-- $body-font-size -->;
-                font-family: <!-- $body-font-family -->;
+                font-family: -apple-system, "<!-- $body-font-family -->";
                 margin: 0;
                 -webkit-user-select: none;
+                overflow-x: hidden;
             }
 
             a {
@@ -146,6 +147,11 @@
             .separator {
                 border-bottom: 1px #ccc solid;
                 margin: 24px 0 24px 0;
+            }
+
+            dd small {
+                display: inline-block;
+                width: 36px;
             }
 
             .added {

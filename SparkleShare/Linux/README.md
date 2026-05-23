@@ -1,85 +1,130 @@
-## Building on Linux distributions
+# SparkleShare for Linux
 
-You can choose to build SparkleShare from source or to get the package through your distribution's repositories.
+## Building with Flatpak
 
-To run SparkleShare, you'll need the following packages:
+If you want to test SparkleShare from Git, it's easiest to build a flatpak locally using [this spec](
+https://github.com/hbons/org.sparkleshare.SparkleShare/) and run it.
 
+
+## Building on Linux
+
+### Common build requirements
+
+You will need the packages listed below for the most used Linux distributions:
+
+```shell
+# On Ubuntu 16.04:
+
+# Run requirements
+sudo apt-get install \
+  curl \
+  git \
+  git-lfs \
+  gvfs  
+
+# Build requirements
+sudo apt-get install \
+  desktop-file-utils \
+  gtk-sharp3-gapi \
+  libappindicator3-0.1-cil-dev \
+  libdbus-glib2.0-cil-dev \
+  libgtk3.0-cil-dev \
+  libnotify3.0-cil-dev \
+  libsoup2.4-dev \
+  libtool-bin \
+  libwebkit2gtk-4.0 \
+  meson \
+  mono-devel \
+  mono-mcs \
+  xsltproc
+
+
+# On Fedora 27:
+
+# Run requirements
+sudo dnf install \
+  curl \
+  git \
+  git-lfs \
+  gvfs
+
+# Build requirements
+sudo dnf install \
+  gtk-sharp3-devel \
+  gtk-sharp3-gapi \
+  libtool \
+  meson \
+  notify-sharp3-devel \
+  webkitgtk4-devel \
+  webkit2-sharp
 ```
-curl
-git >= 1.8
-gtk-sharp2
-mono-core >= 2.8
-notify-sharp
-webkit-sharp
-```
-
-**Note:** These packages may not overlap with the packages required to perform a build, so please make sure that at least the above packages are installed.
-
-Optional packages:
-
-```
-gvfs (to change file/folder icons)
-libappindicator (for Ubuntu integration)
-```
-
-### Installing build requirements
-
-You can use one of the commands listed below for the most used Linux distributions:
 
 
-#### Ubuntu
+### Additional source build requirements
+
+Install these `soup-sharp` and `webkit2gtk-sharp` bindings:
 
 ```bash
-$ sudo apt-get install libappindicator0.1-cil-dev gtk-sharp2 mono-runtime mono-devel \
-  monodevelop libndesk-dbus1.0-cil-dev nant libnotify-cil-dev libgtk2.0-cil-dev mono-mcs \
-  mono-gmcs libwebkit-cil-dev intltool libtool libndesk-dbus-glib1.0-cil-dev
+git clone https://github.com/hbons/soup-sharp
+cd soup-sharp/
+./autogen.sh
+make
+sudo make install
 ```
-
-#### Fedora
 
 ```bash
-$ sudo yum install gtk-sharp2-devel mono-core mono-devel monodevelop ndesk-dbus-devel \
-  ndesk-dbus-glib-devel nant notify-sharp-devel webkit-sharp-devel webkitgtk-devel libtool \
-  intltool desktop-file-utils
+git clone https://github.com/hbons/webkit2-sharp
+cd webkit2-sharp/
+./autogen.sh
+make
+sudo make install
 ```
 
-#### Debian
+On Ubuntu, also install these `appindicator-sharp` bindings:
 
 ```bash
-$ sudo apt-get install gtk-sharp2 mono-runtime mono-devel monodevelop libndesk-dbus1.0-cil-dev \
-  nant libnotify-cil-dev libgtk2.0-cil-dev mono-mcs mono-gmcs libwebkit-cil-dev intltool libtool \
-  libndesk-dbus-glib1.0-cil-dev desktop-file-utils
+sudo apt-get install libappindicator3-dev
+git clone https://github.com/hbons/appindicator-sharp
+cd appindicator-sharp/
+./autogen.sh
+make
+sudo make install
 ```
 
-#### openSUSE
+
+### Start the build
+
+You can build and install SparkleShare with `meson` like this:
 
 ```bash
-$ sudo zypper install gtk-sharp2 mono-core mono-devel monodevelop ndesk-dbus-glib-devel nant \
-  desktop-file-utils notify-sharp-devel webkit-sharp libwebkitgtk-devel libtool intltool
+meson build/
+ninja -C build/
+sudo ninja install -C build/
 ```
 
-### Starting the build
 
-You can build and install SparkleShare like this:
+If your distribution has an out of date `meson` package, you can install the latest version using the Python package manager:
 
 ```bash
-$ ./configure (or ./autogen.sh if you build from the repository)
-$ make
-$ sudo make install
+# Install pip using your system's package manager
+sudo apt-get install python3-pip # Ubuntu
+sudo dnf install python3-pip # Fedora
+
+pip3 install meson
 ```
 
 
-### Resetting SparkleShare settings
+### Uninstall
 
+```bash
+sudo ninja uninstall
 ```
+
+
+### Reset SparkleShare settings
+
+```bash
 rm -Rf ~/SparkleShare
-rm -Rf ~/.config/sparkleshare
-```
-
-
-### Uninstalling
-
-```
-sudo make uninstall
+rm -Rf ~/.config/org.sparkleshare.SparkleShare
 ```
 

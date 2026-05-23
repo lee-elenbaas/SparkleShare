@@ -5,17 +5,17 @@
 	<key>CFBundleIconFile</key>
 	<string>sparkleshare-app</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.sparkleshare.sparkleshare</string>
+	<string>org.sparkleshare.SparkleShare</string>
 	<key>CFBundleName</key>
 	<string>SparkleShare</string>
-	<key>CFBundleVersion</key>
-	<string>1.2</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2</string>
+	<string>3.38.0</string>
+	<key>CFBundleVersion</key>
+	<string>3.38.0</string>
 	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.productivity</string>
+	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.6</string>
+	<string>10.9</string>
 	<key>LSUIElement</key>
 	<string>1</string>
 	<key>NSMainNibFile</key>

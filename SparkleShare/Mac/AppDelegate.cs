@@ -1,5 +1,5 @@
-//   SparkleShare, a collaboration and sharing tool.
-//   Copyright (C) 2010  Hylke Bons <hylkebons@gmail.com>
+﻿//   SparkleShare, a collaboration and sharing tool.
+//   Copyright (C) 2010  Hylke Bons <hi@planetpeanut.uk>
 //
 //   This program is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
@@ -15,17 +15,11 @@
 //   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-using System;
-using System.Drawing;
-
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
+using AppKit;
 
 namespace SparkleShare
 {
 	public partial class AppDelegate : NSApplicationDelegate
 	{
-
 	}
 }
